@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Bar Chart 2</title>
+    <script src="/d3/d3.v7.js" type="text/javascript"></script>
+    
+    <style>
+        .bin rect:hover{
+            fill: #28587B;
+        }
+
+
+    </style>
+    
+</head>
+<body>
+    <div id="wrapper"></div>
+
+    <script>
+
+        async function drawBars(){
+            
+            // 1. Access Data
+            const dataset = await d3.json("/data/my_weather_data.json")
+            console.table(dataset)
+
+            const metricAccessor = (d) => d.humidity 
+
+            // 2.Create Dimensions
+            const width = 600
+
+            const svgWidth = width
+            const svgHeight = width * 0.6
+            const marginLeft = 50
+            const marginRight = 10
+            const marginTop = 35
+            const marginBottom = 50
+
+            const boundsWidth = svgWidth - marginLeft - marginRight
+            const boundsHeight = svgHeight - marginTop - marginBottom
+
+            // 3. Draw Canvas
+            const wrapper = d3.select("#wrapper")
+                                .append("svg")
+                                .attr("width", svgWidth)
+                                .attr("height", svgHeight)
+
+            const bounds = wrapper.append("g")
+                                    .style("transform", `translate(${marginLeft}px, ${marginTop}px)`)
+
+            // INIT constants
+            bounds.append("g")
+                    .attr("class", "bins")
+            bounds.append("line")
+                    .attr("class", "mean")
+            bounds.append("g")
+                    .attr("class", "x-axis")
+                    .style("transform", `translateY(${boundsHeight}px)`)
+                .append("text")
+                    .attr("class", "x-axis-label")
+            bounds.append("text")
+                    .attr("class", "meanLabel")
+
+            // 4.Create Scales
+            const xScale = d3.scaleLinear()
+                                .domain(d3.extent(dataset, metricAccessor))
+                                .range([0, boundsWidth])
+                                .nice()
+
+            const binGenerator = d3.histogram()
+                                    .domain(xScale.domain())
+                                    .value(metricAccessor)
+                                    .thresholds(12)
+
+            const bins = binGenerator(dataset)
+            console.table(bins)
+
+            const yAccessor = (d) => d.length
+
+            const yScale = d3.scaleLinear()
+                                .domain([0, d3.max(bins, yAccessor)])
+                                .range([boundsHeight, 0])
+                                .nice()
+
+            // 5. Draw data
+            
+            // we did this uptop at INIT constants
+            // const binsGroup = bounds.append("g") 
+            // const binGroups = binsGroup.selectAll("g")
+                                            // .data(bins)
+                                            // .enter()
+                                           // .append("g")
+
+            const barPadding = 2
+
+            let binGroups = bounds.select(".bins")
+                                    .selectAll(".bin")
+                                    .data(bins)
+            
+
+            binGroups.exit()
+                        .remove()
+
+            console.table(binGroups)
+
+            const newBinGroups = binGroups.enter()
+                                            .append("g")
+                                            .attr("class", "bin")
+            
+            newBinGroups.append("rect")
+                        .attr("x", (d) => xScale(d.x0) + 1)
+                        .attr("y", boundsHeight)
+                        .attr("width", (d) => d3.max([0, xScale(d.x1) - xScale(d.x0) - barPadding]))
+                        .attr("height", 0)
+            
+            newBinGroups.append("text")
+                        .attr("x", (d) => xScale(d.x0) + (xScale(d.x1) - xScale(d.x0))/2)
+                        .attr("y", (d) => boundsHeight - 5)
+
+            binGroups = newBinGroups.merge(binGroups)
+
+            //I want to go the init constants method 
+            
+
+            const barRects = binGroups.select("rect")
+                                        .attr("x", (d) => xScale(d.x0) + barPadding)
+                                        .attr("y", (d) => yScale(yAccessor(d)))
+                                        .attr("width", (d) => d3.max([0, xScale(d.x1) - xScale(d.x0) - barPadding]))
+                                        .attr("height", (d) => boundsHeight - yScale(yAccessor(d)))
+                                        .attr("fill", "#00BD9D")
+                                        .attr("rx", "5px")
+
+                                        
+
+            const barText = binGroups.filter(yAccessor)
+                                        .select("text")
+                                        .attr("x", (d) => xScale(d.x0) + (xScale(d.x1) - xScale(d.x0))/2)
+                                        .attr("y", (d) => yScale(yAccessor(d)) - 5)
+                                        .text(yAccessor)
+                                        .style("text-anchor", "middle")
+                                        .style("font-size", "12px")
+
+            const mean = d3.mean(dataset, metricAccessor)
+
+            const meanLine = bounds.select(".mean")
+                                    .attr("x1", xScale(mean))
+                                    .attr("x2", xScale(mean))
+                                    .attr("y2", -20)
+                                    .attr("y1", boundsHeight)
+                                    .attr("stroke", "maroon")
+                                    .attr("stroke-dasharray", "2px 4px")
+
+            const meanLabel = bounds.select(".meanLabel")
+                                    .attr("x", xScale(mean))
+                                    .attr("y", -20)
+                                    .text(`mean = ${mean.toFixed(3)}`)
+                                    .style("text-anchor", "middle")
+                                    .style("font-size", "12px")
+        
+            // 6. Draw Peripherals
+            const xAxis = bounds.select(".x-axis")
+                                .call(d3.axisBottom(xScale))
+
+            const xAxisLable = xAxis.selectAll(".x-axis-label")
+                                    .attr("x", boundsWidth/2)
+                                    .attr("y", marginBottom - 10)
+                                    .text("Humidity")
+                                    .style("font-size", "12px")
+                                    .attr("fill", "black")
+        }
+        
+        drawBars()
+
+    </script>
+</body>
+</html>
