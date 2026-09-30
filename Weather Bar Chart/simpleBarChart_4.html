@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Bar Chart With Transitions</title>
+    <title>Simple Bar Chart with Update Transitions</title>
     <script src="/d3/d3.v7.js" type="text/javascript"></script>
 
     <style>
@@ -130,7 +130,7 @@
 
                 newBinsGroup.append("text")
                             .attr("x", (d) => xScale(d.x0) + (xScale(d.x1) - xScale(d.x0))/2)
-                            .attr("y", (d) => boundsHeight - 5)
+                            .attr("y", boundsHeight - 5)
 
                 binsGroup = newBinsGroup.merge(binsGroup)
 
