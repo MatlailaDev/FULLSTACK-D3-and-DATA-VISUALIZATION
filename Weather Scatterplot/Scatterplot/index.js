@@ -74,6 +74,8 @@ async function drawScatterplot() {
 
     drawDots(dataset, (d) => colorScale(colorAccessor(d)))
 
+
+    // 6.Draw Peripherals
     const xAxis = bounds.append("g")
         .call(d3.axisBottom(xScale))
         .style("transform", `translateY(${boundsHeight}px)`)
@@ -96,6 +98,45 @@ async function drawScatterplot() {
         .style("transform", `rotate(-90deg)`)
         .style("text-anchor", "middle")
         .text("Relative Humidity")
+
+    //7. Set Up Interactions
+    const tooltip = d3.select("#tooltip")
+
+    clip.selectAll("circle")
+        .on("mouseenter", onMouseEnter)
+        .on("mouseleave", onMouseLeave)
+
+    function onMouseEnter(event, datum) {
+        const formatHumidity = d3.format(".2f")
+
+        tooltip.select("#humidity")
+            .text(formatHumidity(yAccessor(datum)))
+        
+        const formatDewPoint = d3.format(".2f")
+
+        tooltip.select("#dew-point")
+            .text(formatDewPoint(xAccessor(datum)))
+
+        const dateParser = d3.timeParse("%Y-%m-%d")
+        const formatDate = d3.timeFormat("%B %A %-d, %Y")
+        console.log(formatDate(dateParser(datum.date)))
+
+        tooltip.select("#date")
+            .text(formatDate(dateParser(datum.date)))
+
+        const x = xScale(xAccessor(datum)) + marginLeft
+        const y = yScale(yAccessor(datum)) + marginTop
+
+        tooltip.style("transform", `translate(`
+            + `calc(-40% + ${x}px),` 
+            + `calc(-100% + ${y}px)` 
+            + `)`)
+
+        tooltip.style("opacity", 1)
+
+    }
+
+    function onMouseLeave() {tooltip.style("opacity", 0)}
 }
 
 drawScatterplot()
