@@ -1,0 +1,59 @@
+.voronoi {
+    fill: transparent;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    padding: 3em 1em;
+    font-family: sans-serif;
+}
+
+.wrapper {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* position: relative; */
+    /* border: 1px dotted red; */
+}
+
+.dot {
+    transition: fill 0.3s;
+}
+
+.dot:hover {
+    animation: colorLoop 1.5s infinite ease-in-out;
+    r: 5.3;
+}
+
+@keyframes colorLoop {
+    0%, 100% {
+        fill: #CC3F0C;
+    }
+    50% {
+        fill: #F5B700 ;
+    }
+}
+
+.tooltip {
+    opacity: 0;
+    position: absolute;
+    top: -14px;
+    left: 0;
+    padding: 0.6em 1em;
+    background: #FFF;
+    text-align: center;
+    line-height: 1.4em;
+    font-size: 0.9em;
+    border: 1px solid #DDD;
+    z-index: 10;
+    transition: all 0.1s ease-out;
+    pointer-events: none;
+}
+
+.tooltip {
+    margin-bottom: 0.2em;
+    font-weight: 600;
+    font-size: 1.1em;
+    line-height: 1.4em;
+}
