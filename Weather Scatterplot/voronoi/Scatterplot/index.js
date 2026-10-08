@@ -25,7 +25,7 @@ async function drawScatterplot() {
         .append("svg")
         .attr("width", svgWidth)
         .attr("height", svgHeight)
-        .attr("viewBox", `0,0 ${svgWidth} ${svgHeight}`)
+        // .attr("viewBox", `0,0 ${svgWidth} ${svgHeight}`)
 
     const bounds = wrapper.append("g")
         .style("transform", `translate(${marginLeft}px, ${marginTop}px)`)
@@ -65,22 +65,60 @@ async function drawScatterplot() {
             .append("circle")
 
         const allDots = newDots.merge(dots)
-            .attr("cx", (d) => xScale(xAccessor(d)))
-            .attr("cy", (d) => yScale(yAccessor(d)))
+                .attr("cx", (d) => xScale(xAccessor(d)))
+                .attr("cy", (d) => yScale(yAccessor(d)))
             .transition()
             .duration(1500)
-            .attr("r", 4)
-            .attr("fill", color)
-            .attr("class", "dot")
+                .attr("r", 4)
+                .attr("fill", color)
+                .attr("class", "dot")
 
         const oldDots = dots.exit()
             .remove()
 
-        const delaunay = d3.Delaunay
+        // const delaunay = d3.Delaunay.from(
+        //     dataset,
+        //     (d) => xScale(xAccessor(d)),
+        //     (d) => yScale(yAccessor(d))
+        // )
+
+        // const voronoi = delaunay.voronoi()
+        // voronoi.xmax = boundsWidth
+        // voronoi.ymax = boundsHeight
+
+        // clip.selectAll(".voronoi")
+        //     .on("mouseenter", onMouseEnter)
+        //     .on("mouseleave", onMouseLeave)
+        //         .data(dataset)
+        //         .enter()
+        //         .append("path")
+        //             .attr("class", "voronoi")
+        //             .attr("d", (d,i) => voronoi.renderCell(i))
+        //             // .attr("stroke", "salmon")
     }
 
     drawDots(dataset, (d) => colorScale(colorAccessor(d)))
 
+
+    const delaunay = d3.Delaunay.from(
+            dataset,
+            (d) => xScale(xAccessor(d)),
+            (d) => yScale(yAccessor(d))
+        )
+
+    const voronoi = delaunay.voronoi()
+    voronoi.xmax = boundsWidth
+    voronoi.ymax = boundsHeight
+
+    clip.selectAll(".voronoi")
+            .data(dataset)
+            .enter()
+            .append("path")
+                .attr("class", "voronoi")
+                .attr("d", (d,i) => voronoi.renderCell(i))
+                // .attr("stroke", "salmon")
+                .on("mouseenter", onMouseEnter)
+                .on("mouseleave", onMouseLeave)
 
     // 6.Draw Peripherals
     const xAxis = bounds.append("g")
@@ -111,10 +149,21 @@ async function drawScatterplot() {
 
 
     clip.selectAll("circle")
-        .on("mouseenter", onMouseEnter)
-        .on("mouseleave", onMouseLeave)
+        // .on("mouseenter", onMouseEnter)
+        // .on("mouseleave", onMouseLeave)
 
     function onMouseEnter(event, datum) {
+        
+        const dayDot = clip.append("circle")
+            .attr("class", "tooltipDot")
+            .attr("cx", xScale(xAccessor(datum)))
+            .attr("cy", yScale(yAccessor(datum)))
+            .attr("r", 7)
+            .style("fill", "maroon")
+            .style("pointer-events", "none")
+
+
+
         const formatHumidity = d3.format(".2f")
 
         tooltip.select("#humidity")
@@ -142,9 +191,20 @@ async function drawScatterplot() {
 
         tooltip.style("opacity", 1)
 
+        // clip.selectAll("circle")
+        //     .filter((d) => d == datum)
+        //     .style("fill", "#F5B700")
+
+        
+
     }
 
-    function onMouseLeave() {tooltip.style("opacity", 0)}
+    function onMouseLeave() {
+        tooltip.style("opacity", 0)
+
+        d3.selectAll(".tooltipDot")
+            .remove()
+    }
 }
 
 drawScatterplot()

@@ -17,11 +17,11 @@ body {
     /* border: 1px dotted red; */
 }
 
-.dot {
+.voronoi {
     transition: fill 0.3s;
 }
 
-.dot:hover {
+/* .voronoi:hover {
     animation: colorLoop 1.5s infinite ease-in-out;
     r: 5.3;
 }
@@ -31,9 +31,9 @@ body {
         fill: #CC3F0C;
     }
     50% {
-        fill: #F5B700 ;
+        fill: #F5B700;
     }
-}
+} */
 
 .tooltip {
     opacity: 0;
