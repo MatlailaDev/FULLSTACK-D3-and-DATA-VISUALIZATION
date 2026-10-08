@@ -23,6 +23,8 @@ async function drawScatterplot() {
     // 3. Draw Canvas
     const wrapper = d3.select("#wrapper")
         .append("svg")
+        .attr("width", svgWidth)
+        .attr("height", svgHeight)
         .attr("viewBox", `0,0 ${svgWidth} ${svgHeight}`)
 
     const bounds = wrapper.append("g")
@@ -57,7 +59,7 @@ async function drawScatterplot() {
     const drawDots = (dataset, color) => {
         // 5.Draw Data
         const dots = clip.selectAll("circle")
-            .data(dataset, (d) => d[0])
+            .data(dataset)
 
         const newDots = dots.enter()
             .append("circle")
@@ -67,6 +69,7 @@ async function drawScatterplot() {
             .attr("cy", (d) => yScale(yAccessor(d)))
             .attr("r", 4)
             .attr("fill", color)
+            .attr("class", "dot")
 
         const oldDots = dots.exit()
             .remove()
@@ -101,6 +104,7 @@ async function drawScatterplot() {
 
     //7. Set Up Interactions
     const tooltip = d3.select("#tooltip")
+
 
     clip.selectAll("circle")
         .on("mouseenter", onMouseEnter)

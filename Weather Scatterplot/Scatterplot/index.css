@@ -13,7 +13,26 @@ body {
     display: block;
     width: 100%;
     height: auto;
+    /* position: relative; */
     /* border: 1px dotted red; */
+}
+
+.dot {
+    transition: fill 0.3s;
+}
+
+.dot:hover {
+    animation: colorLoop 1.5s infinite ease-in-out;
+    r: 5.3;
+}
+
+@keyframes colorLoop {
+    0%, 100% {
+        fill: #CC3F0C;
+    }
+    50% {
+        fill: #F5B700 ;
+    }
 }
 
 .tooltip {
