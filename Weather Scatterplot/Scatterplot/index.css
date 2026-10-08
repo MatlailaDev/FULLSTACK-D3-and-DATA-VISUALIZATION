@@ -9,6 +9,13 @@ body {
     font-family: sans-serif;
 }
 
+.wrapper {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* border: 1px dotted red; */
+}
+
 .tooltip {
     opacity: 0;
     position: absolute;
