@@ -5,9 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <script src="/d3/d3.v7.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="studying_weather_scatterplot.css">
 </head>
 <body>
-    <div id="wrapper"></div>
+    <div id="wrapper" class="wrapper">
+        <div id="tooltip" class="tooltip">
+            <div class="tooltip-date">
+                <span id="date"></span>
+            </div>
+            <div class="tooltip-humidity">
+                Humidity: <span id="humidity"></span>
+            </div>
+            <div class="tooltip-dew-point">
+                Dew Point: <span id="dew-point"></span>
+            </div>
+        </div>
+    </div>
 
     <script src="studying_weather_scatterplot.js"></script>
 </body>

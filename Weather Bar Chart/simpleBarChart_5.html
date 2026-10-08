@@ -5,18 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simple Bar Chart with Update and Exit Transitions</title>
     <script src="/d3/d3.v7.js" type="text/javascript"></script>
-    <link rel="stylesheet" href="updating-bars.css"> <!--I am using the same styles as updating-bars.js -->
-
-    <style>
-        #wrapper {
-            min-width: fit-content;
-            max-width: 100vw;
-        }
-    </style>
-
+    <link rel="stylesheet" href="simpleBarChart_5.css"> <!--I am using the same styles as updating-bars.js -->
 </head>
 <body>
-    <div id="wrapper"></div>
+    <div id="wrapper" class="wrapper">
+
+        <div id="tooltip" class="tooltip">
+            <div class="tooltip-range">
+                Humidity: <span id="range"></span>
+            </div>
+            <div class="tooltip-value">
+                <span id="count"></span> days
+            </div>
+        </div>
+    
+    </div>
 
     <script>
         async function drawBars(){
@@ -52,7 +55,7 @@
                     .attr("class", "mean")    
             bounds.append("g")
                     .attr("class", "x-axis")
-                    .style("transform", `translate(${boundsHeight}px)`)
+                    .style("transform", `translateY(${boundsHeight}px)`)
                 .append("text")
                     .attr("class", "x-axis-label")
             bounds.append("text")
@@ -98,8 +101,6 @@
                                                 .attr("class", "bin")
 
                 newBinGroups.append("rect")
-                        .on("mouseover", function doThis(event, d){d3.select(this).style("fill", "black")})
-                        .on("mouseout", function doThat(event, d){d3.select(this).style("fill", "#00BD9D")})
                             .attr("x", (d) => xScale(d.x0) + barPadding)
                             .attr("y", boundsHeight)
                             .attr("width", (d) => d3.max([0, xScale(d.x1) - xScale(d.x0) - barPadding]))
@@ -119,11 +120,11 @@
 
                 const updateTransition = exitTransition.transition()
                                             .ease(d3.easeLinear)
-                                            .duration(600)
+                                            .duration(900)
 
-                const updateTransitionMean = d3.transition()
+                const updateTransitionMean = updateTransition.transition()
                                             .ease(d3.easeLinear)
-                                            .duration(1200)
+                                            .duration(900)
 
                 
 
@@ -142,6 +143,8 @@
 
 
                 const barRects = binGroups.select("rect")
+                                            .on("mouseenter", onMouseEnter)
+                                            .on("mouseleave", onMouseLeave)
                                         .transition(updateTransition)
                                             .attr("x", (d) => xScale(d.x0) + barPadding)
                                             .attr("y", (d) => yScale(yAccessor(d)))
@@ -166,8 +169,7 @@
                                     .transition(updateTransitionMean)
                                         .attr("x1", xScale(mean))
                                         .attr("x2", xScale(mean))
-                                        .attr("y1", -20)
-                                    .transition(updateTransition)
+                                        .attr("y1", -20)                          
                                         .attr("y2", boundsHeight)
 
                 const meanLabel = bounds.select(".meanLabel")
@@ -176,22 +178,61 @@
                                         .attr("y", -20)
                                         .text(`mean = ${mean.toFixed(3)}`)
                                         .attr("fill", "maroon")
-                                        .style("font-size", "12px")
                                         .style("text-anchor", "middle")
 
 
                 const xAxis = bounds.select(".x-axis")
+                                    .transition(updateTransition)
                                         .call(d3.axisBottom(xScale))
-                                        .style("transform", `translateY(${boundsHeight}px)`)
+
 
 
                 const xAxisLabel = xAxis.select(".x-axis-label")
                                         .attr("x", boundsWidth/2)
                                         .attr("y", marginBottom - 10)
+                                    .transition()
                                         .text(metric)
                                         .style("fill", "black")
-                
 
+                 // 7. Set up interactions
+                const tooltip = d3.select("#tooltip")
+
+                function onMouseEnter(event, datum) {
+
+                    // Fill style
+                    d3.select(this).style("fill", "seagreen")
+
+                    tooltip.select("#count")
+                        .text(yAccessor(datum))
+
+                    tooltip.select("#range")
+                        .text([datum.x0, datum.x1].join(" - "))
+
+
+
+                    // Convert chart coordinates -> pixels, accounting for the viewBox scaling
+                    const svgRect = wrapper.node().getBoundingClientRect()
+                    const wrapperRect = document.getElementById("wrapper").getBoundingClientRect()
+                    const k = svgRect.width / svgWidth
+
+                    const x = (svgRect.left - wrapperRect.left)
+                            + (xScale(datum.x0) + (xScale(datum.x1) - xScale(datum.x0)) / 2 + marginLeft) * k
+                    const y = (svgRect.top - wrapperRect.top)
+                            + (yScale(yAccessor(datum)) + marginTop - 5) * k
+
+                    tooltip.style("transform", `translate(calc(-50% + ${x}px), calc(-100% + ${y}px))`)
+                            .style("opacity", 0.9)
+
+                }
+
+                function onMouseLeave() {
+
+                    // Fill style
+                    d3.select(this).style("fill", "#00BD9D")
+
+                    tooltip.style("opacity", 0)
+                }
+      
             }
 
             const metrics = [

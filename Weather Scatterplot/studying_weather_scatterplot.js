@@ -33,8 +33,11 @@ async function drawScatterplot(){
 
     const wrapper = d3.select("#wrapper")
                         .append("svg")
-                        .attr("width", svgWidth)
-                        .attr("height", svgHeight)
+                        .attr("viewBox", `0 0 ${svgWidth} ${svgHeight}`)
+                        .style("width", "100%")
+                        .style("height", "auto")
+                        .style("display", "block")
+                        
 
     const bounds = wrapper.append("g")
                             .style("transform", `translate(${marginLeft}px, ${marginTop}px)`)
@@ -49,6 +52,10 @@ async function drawScatterplot(){
                         .attr("cy", function(d){return yScale(yAccessor(d))})
                         .attr("r", 5)
                         .attr("fill", color)
+                        .attr("class", "dots")
+
+
+         
                     
     }
     
@@ -79,6 +86,44 @@ async function drawScatterplot(){
                             .html("Relative humidity")
                             .style("transform", "rotate(-90deg)")
                             .style("text-anchor", "middle")
+
+
+    // 7. Set up interactions
+    bounds.selectAll("circle")
+           .on("mouseenter", onMouseEnter)
+            .on("mouseleave", onMouseLeave) 
+
+
+
+    const tooltip = d3.select("#tooltip")
+
+    function onMouseEnter(event, datum, index) {
+        tooltip.select("#count")
+            .text(yAccessor(datum))
+
+        tooltip.select("#range")
+            .text([datum.x0, datum.x1].join(" - "))
+
+
+
+        // Convert chart coordinates -> pixels, accounting for the viewBox scaling
+        const svgRect = wrapper.node().getBoundingClientRect()
+        const wrapperRect = document.getElementById("wrapper").getBoundingClientRect()
+        const k = svgRect.width / svgWidth
+
+        const x = (svgRect.left - wrapperRect.left)
+                + (xScale(datum.x0) + (xScale(datum.x1) - xScale(datum.x0)) / 2 + marginLeft) * k
+        const y = (svgRect.top - wrapperRect.top)
+                + (yScale(yAccessor(datum)) + marginTop - 5) * k
+
+        tooltip.style("transform", `translate(calc(-50% + ${x}px), calc(-100% + ${y}px))`)
+                .style("opacity", 0.9)
+
+    }
+
+    function onMouseLeave() {
+        tooltip.style("opacity", 0)
+    }
 
 
     
