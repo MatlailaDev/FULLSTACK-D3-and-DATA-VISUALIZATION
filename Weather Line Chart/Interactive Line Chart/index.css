@@ -1,0 +1,65 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.wrapper {
+    position: relative;
+    border: 1px dotted red;
+}
+
+.freezing {
+    fill: aqua;
+    opacity: 0.5;
+}
+
+.line{
+    fill: none;
+    stroke: maroon;
+    stroke-width: 1.2;
+}
+
+.axis-label {
+    fill: black;
+    font-size: 1.1em;
+}
+
+.yAxis-label {
+    transform: rotate(-90deg);
+}
+
+
+.tooltip {
+    opacity: 0;
+    position: absolute;
+    top: -14px;
+    left: 0;
+    padding: 0.6em 1em;
+    background: #fff;
+    text-align: center;
+    line-height: 1.4em;
+    font-size: 0.9em;
+    border: 1px solid #ddd;
+    z-index: 10;
+    transition: all 0.1s ease-out;
+    pointer-events: none;
+}
+
+.tooltip-date {
+    margin-bottom: 0.2em;
+    font-weight: 600;
+    font-size: 1.1em;
+    line-height: 1.4em;
+}
+
+.listening-rect {
+    fill: transparent;
+}
+
+.tooltipCircle {
+    stroke: #AF9358;
+    fill: #FEFEFE;
+    stroke-width: 2;
+    opacity: 0;
+}

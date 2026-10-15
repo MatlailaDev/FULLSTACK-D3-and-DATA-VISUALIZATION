@@ -67,7 +67,7 @@ async function drawScatterplot() {
         const allDots = newDots.merge(dots)
                 .attr("cx", (d) => xScale(xAccessor(d)))
                 .attr("cy", (d) => yScale(yAccessor(d)))
-            .transition()
+            .transition() 
             .duration(1500)
                 .attr("r", 4)
                 .attr("fill", color)
@@ -76,25 +76,6 @@ async function drawScatterplot() {
         const oldDots = dots.exit()
             .remove()
 
-        // const delaunay = d3.Delaunay.from(
-        //     dataset,
-        //     (d) => xScale(xAccessor(d)),
-        //     (d) => yScale(yAccessor(d))
-        // )
-
-        // const voronoi = delaunay.voronoi()
-        // voronoi.xmax = boundsWidth
-        // voronoi.ymax = boundsHeight
-
-        // clip.selectAll(".voronoi")
-        //     .on("mouseenter", onMouseEnter)
-        //     .on("mouseleave", onMouseLeave)
-        //         .data(dataset)
-        //         .enter()
-        //         .append("path")
-        //             .attr("class", "voronoi")
-        //             .attr("d", (d,i) => voronoi.renderCell(i))
-        //             // .attr("stroke", "salmon")
     }
 
     drawDots(dataset, (d) => colorScale(colorAccessor(d)))
@@ -147,11 +128,6 @@ async function drawScatterplot() {
     //7. Set Up Interactions
     const tooltip = d3.select("#tooltip")
 
-
-    clip.selectAll("circle")
-        // .on("mouseenter", onMouseEnter)
-        // .on("mouseleave", onMouseLeave)
-
     function onMouseEnter(event, datum) {
         
         const dayDot = clip.append("circle")
@@ -189,13 +165,7 @@ async function drawScatterplot() {
             + `calc(-100% + ${y}px)` 
             + `)`)
 
-        tooltip.style("opacity", 1)
-
-        // clip.selectAll("circle")
-        //     .filter((d) => d == datum)
-        //     .style("fill", "#F5B700")
-
-        
+        tooltip.style("opacity", 1)    
 
     }
 
